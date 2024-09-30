@@ -88,7 +88,7 @@ def parse_contents(contents, filename):
 # Streamlit App Layout
 st.title("👩‍💻BFITS HR Analysis")
 # Subtitle instructions for file preparation before import
-st.subheader("Please do this every time before importing the file:")
+st.subheader("❗Please do this every time before importing the file:")
 st.markdown("""
 1. **Remove the first 3 header rows**.
 2. **Change the column header**:
