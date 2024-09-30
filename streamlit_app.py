@@ -92,7 +92,7 @@ st.subheader("❗Please do this every time before importing the file:")
 st.markdown("""
 1. **Remove the first 3 header rows**.
 2. **Change the column header**:
-   - 'What was your major/specialization?' to 'pass_university_accredited.'
+   - 'What was your major/specialization?, To ensure that we can process a legal work permit for you.... ' to 'pass_university_accredited.'
 """)
 st.write("Upload a CSV file to analyze the data.")
 
