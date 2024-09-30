@@ -1,1 +1,5 @@
 streamlit
+pandas
+io
+base64
+numpy
