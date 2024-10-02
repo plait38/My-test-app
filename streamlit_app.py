@@ -36,7 +36,7 @@ def parse_contents(contents, filename):
         'You only need to complete our application form once. Let us know other positions you are interested in.':'interested_position',
         'Completed Date':'Completed_Date',
         'What is your ideal teaching location in Thailand?':'Ideal_location',
-        'pass_university_accredited.':'pass_accredited',
+        'pass_university_accredited':'pass_accredited',
         'Which grade level would you like to teach?':'expected_grade',
         'Passport Country of Issue':'Passport_issue'
     }, inplace=True)
@@ -92,7 +92,7 @@ st.subheader("❗Please do this every time before importing the file:")
 st.markdown("""
 1. **Remove the first 3 header rows**.
 2. **Change the column header**:
-   - 'What was your major/specialization?, To ensure that we can process a legal work permit for you.... ' to 'pass_university_accredited.'
+   - 'What was your major/specialization?, To ensure that we can process a legal work permit for you.... ' to 'pass_university_accredited'
 """)
 st.write("Upload a CSV file to analyze the data.")
 
