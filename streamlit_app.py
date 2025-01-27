@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import io
 import base64
-import numpy as np
 
 # Function to parse uploaded CSV data
 def parse_contents(contents, filename):
@@ -10,11 +9,13 @@ def parse_contents(contents, filename):
     decoded = base64.b64decode(content_string)
     try:
         if 'csv' in filename:
-            # Read the CSV file with encoding='latin1'
-            df = pd.read_csv(io.StringIO(decoded.decode('latin1')))
+            # Read the CSV file with encoding='latin1' and skip the first 3 rows
+            df = pd.read_csv(io.StringIO(decoded.decode('latin1')), skiprows=3)
         else:
+            st.error("Unsupported file type. Please upload a CSV file.")
             return None, None, None
     except Exception as e:
+        st.error(f"Error parsing file: {e}")
         return None, None, None
 
     # Rename the columns as needed
@@ -22,7 +23,7 @@ def parse_contents(contents, filename):
         'Where did you find our job post?': 'job_source',
         'Where are you currently located?': 'current_location',
         'What is your ideal start date for teaching?': 'ideal_startdate',
-        'If you selected (Other), please specify:':'Other_source',
+        'If you selected (Other), please specify:': 'Other_source',
         'What was your major/specialization?': 'major/specialization',
         'Do you hold a passport from any of the following countries?\nUS, UK, Canada, Australia, New Zealand, Ireland or South Africa': 'native_speaker',
         'What is your age?': 'age',
@@ -33,12 +34,12 @@ def parse_contents(contents, filename):
         "Bachelor's Degree from College and/or University (Original Copy Required upon arrival in Thailand) **Please ONLY upload your Bachelor's degree**": "Graduated",
         "If Selected (Other...) Indicate your Passport Country of Issue.": "other_country",
         "Do you have a University/College Bachelor's degree?": "Bachelor_degree",
-        'You only need to complete our application form once. Let us know other positions you are interested in.':'interested_position',
-        'Completed Date':'Completed_Date',
-        'What is your ideal teaching location in Thailand?':'Ideal_location',
-        'pass_university_accredited':'pass_accredited',
-        'Which grade level would you like to teach?':'expected_grade',
-        'Passport Country of Issue':'Passport_issue'
+        'You only need to complete our application form once. Let us know other positions you are interested in.': 'interested_position',
+        'Completed Date': 'Completed_Date',
+        'What is your ideal teaching location in Thailand?': 'Ideal_location',
+        'Which grade level would you like to teach?': 'expected_grade',
+        'To ensure that we can process a legal work permit for you, kindly verify that your university is accredited.\n\nUSA\nhttps://www.chea.org/  \n\nUK\nhttps://hedd.ac.uk/ \nhttps://onlinescr.co.uk/ \nhttps://www.gov.uk/government/collections/qualified-teacher-status-qts \n\nPhilippines\nhttps://ched.gov.ph/': 'pass_accredited',
+        'Passport Country of Issue': 'Passport_issue'
     }, inplace=True)
 
     # Create a full name column
@@ -86,14 +87,7 @@ def parse_contents(contents, filename):
 
 
 # Streamlit App Layout
-st.title("👩‍💻BFITS HR Analysis")
-# Subtitle instructions for file preparation before import
-st.subheader("❗Please do this every time before importing the file:")
-st.markdown("""
-1. **Remove the first 3 header rows**.
-2. **Change the column header**:
-   - 'What was your major/specialization?, To ensure that we can process a legal work permit for you.... ' to 'pass_university_accredited'
-""")
+st.title("👩‍💻 BFITS HR Analysis")
 st.write("Upload a CSV file to analyze the data.")
 
 # File uploader
@@ -106,32 +100,34 @@ if uploaded_file is not None:
     contents = f"data:application/csv;base64,{encoded_string}"
     source, source2, grouped_counts = parse_contents(contents, uploaded_file.name)
 
-    # Data selection dropdown
-    selected_data = st.selectbox(
-        "Select a table to view or export:",
-        ["Job Source by Native", "Job Source by Country", "Job Source by Age"]
-    )
+    if source is not None:
+        # Data selection dropdown
+        selected_data = st.selectbox(
+            "Select a table to view or export:",
+            ["Job Source by Native", "Job Source by Country", "Job Source by Age"]
+        )
 
-    # Display the selected table
-    if selected_data == "Job Source by Native":
-        st.dataframe(source)
-        df_to_export = source
-        filename = "job_source_by_native.csv"
-    elif selected_data == "Job Source by Country":
-        st.dataframe(source2)
-        df_to_export = source2
-        filename = "job_source_by_country.csv"
-    elif selected_data == "Job Source by Age":
-        st.dataframe(grouped_counts)
-        df_to_export = grouped_counts
-        filename = "job_source_by_age.csv"
+        # Display the selected table
+        if selected_data == "Job Source by Native":
+            st.dataframe(source)
+            df_to_export = source
+            filename = "job_source_by_native.csv"
+        elif selected_data == "Job Source by Country":
+            st.dataframe(source2)
+            df_to_export = source2
+            filename = "job_source_by_country.csv"
+        elif selected_data == "Job Source by Age":
+            st.dataframe(grouped_counts)
+            df_to_export = grouped_counts
+            filename = "job_source_by_age.csv"
 
-    # Export button
-    csv = df_to_export.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label="Export Data",
-        data=csv,
-        file_name=filename,
-        mime='text/csv'
-    )
-
+        # Export button
+        csv = df_to_export.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Export Data",
+            data=csv,
+            file_name=filename,
+            mime='text/csv'
+        )
+    else:
+        st.error("The file could not be processed. Please check the format.")
