@@ -6,11 +6,6 @@ import io
 import base64
 import google.generativeai as genai
 
-
-# Set your Gemini API key
-genai.configure(api_key="AIzaSyCsYTn1OUPWEHQCMsq1W_RSEEHDlJkHmfI")
-
-# Function to parse uploaded CSV data
 # Function to parse uploaded CSV data
 def parse_contents(contents, filename):
     content_type, content_string = contents.split(',')
